@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native"; // Tambahkan ini
-// import { UserProfile } from "../screens";
+
 
 const Profile = () => {
   const navigation = useNavigation(); // Ubah ini

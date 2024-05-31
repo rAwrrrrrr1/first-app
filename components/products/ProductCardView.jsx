@@ -1,47 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, ActivityIndicator, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import axios from 'axios';
 
 const ProductCardView = () => {
-  const [data, setData] = useState([]);
+  const [products, setProducts] = useState({ badmintons: [], futsals: [], miniSoccers: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
-  }, []); // Array dependensi kosong memastikan useEffect hanya dipanggil sekali
+  }, []);
 
   const fetchData = async () => {
     try {
       const [badmintonResponse, futsalResponse, miniSoccerResponse] = await Promise.all([
-        fetch('http://192.168.1.11:8000/api/badminton'),
-        fetch('http://192.168.1.11:8000/api/futsal'),
-        fetch('http://192.168.1.11:8000/api/soccer')
+        axios.get('http://192.168.1.11:8000/api/badminton'),
+        axios.get('http://192.168.1.11:8000/api/futsal'),
+        axios.get('http://192.168.1.11:8000/api/soccer')
       ]);
-      console.log(`Hasil Fetch =  ${badmintonResponse}`);
-
-      const badmintonData = await badmintonResponse.json();
-      const futsalData = await futsalResponse.json();
-      const miniSoccerData = await miniSoccerResponse.json();
-
-      const sections = [
-        { title: 'Badminton', data: badmintonData.data },
-        { title: 'Futsal', data: futsalData.data },
-        { title: 'Mini Soccer', data: miniSoccerData.data }
-      ];
-      console.log(sections);
-
-      setData(sections);
       setLoading(false);
+      setProducts({
+        badmintons: badmintonResponse.data.data,
+        futsals: futsalResponse.data.data,
+        miniSoccers: miniSoccerResponse.data.data,
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
     }
   };
 
-  const renderItem = ({ item }) => (
+  const handlePressMessage = (productName) => {
+    console.log('Pesan:', productName);
+  };
+
+  const renderProductItem = (item) => (
     <View style={styles.card}>
       <Text style={styles.title}>{item.nama}</Text>
       <Text style={styles.price}>Harga: {item.harga}</Text>
       <Text style={styles.description}>Keterangan: {item.keterangan}</Text>
+      <TouchableOpacity onPress={() => handlePressMessage(item.nama)} style={styles.button}>
+        <Text style={styles.buttonText}>Pesan</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -50,15 +49,35 @@ const ProductCardView = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <SectionList
-          sections={data}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={styles.sectionTitle}>{title}</Text>
-          )}
-          contentContainerStyle={styles.listContainer}
-        />
+        <>
+          <View style={styles.horizontalListContainer}>
+            <Text style={styles.sectionTitle}>Badminton</Text>
+            <FlatList
+              data={products.badmintons}
+              renderItem={({ item }) => renderProductItem(item)}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+            />
+          </View>
+          <View style={styles.horizontalListContainer}>
+            <Text style={styles.sectionTitle}>Futsal</Text>
+            <FlatList
+              data={products.futsals}
+              renderItem={({ item }) => renderProductItem(item)}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+            />
+          </View>
+          <View style={styles.horizontalListContainer}>
+            <Text style={styles.sectionTitle}>Mini Soccer</Text>
+            <FlatList
+              data={products.miniSoccers}
+              renderItem={({ item }) => renderProductItem(item)}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+            />
+          </View>
+        </>
       )}
     </View>
   );
@@ -70,34 +89,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  listContainer: {
+  horizontalListContainer: {
+    marginTop: 20,
     paddingHorizontal: 10,
     width: Dimensions.get('window').width - 20,
   },
   card: {
-    padding: 20,
+    padding: 15,
     marginVertical: 10,
+    marginHorizontal: 5,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 10,
+    width: 180,
     backgroundColor: '#fff',
-    elevation: 3, // shadow for Android
+    elevation: 3,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   price: {
-    marginBottom: 3,
+    marginBottom: 5,
   },
   description: {
+    marginBottom: 10,
     color: '#666',
+  },
+  button: {
+    backgroundColor: '#009688',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
