@@ -5,6 +5,7 @@ import axios from 'axios';
 const ProductCardView = () => {
   const [products, setProducts] = useState({ badmintons: [], futsals: [], miniSoccers: [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -17,14 +18,15 @@ const ProductCardView = () => {
         axios.get('http://127.0.0.1:8000/api/futsal'),
         axios.get('http://127.0.0.1:8000/api/soccer')
       ]);
-      setLoading(false);
       setProducts({
         badmintons: badmintonResponse.data.data,
         futsals: futsalResponse.data.data,
         miniSoccers: miniSoccerResponse.data.data,
       });
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
+      setError('Failed to load data');
       setLoading(false);
     }
   };
@@ -48,6 +50,8 @@ const ProductCardView = () => {
     <View style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
       ) : (
         <>
           <View style={styles.horizontalListContainer}>
@@ -132,6 +136,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
   },
 });
 

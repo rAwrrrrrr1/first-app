@@ -3,10 +3,9 @@ import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, 
 import axios from 'axios';
 
 const ProductCardView = () => {
-  const [badmintons, setBadmintons] = useState([]);
-  const [futsals, setFutsals] = useState([]);
-  const [miniSoccers, setMiniSoccers] = useState([]);
+  const [products, setProducts] = useState({ badmintons: [], futsals: [], miniSoccers: [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -19,44 +18,24 @@ const ProductCardView = () => {
         axios.get('http://127.0.0.1:8000/api/futsal'),
         axios.get('http://127.0.0.1:8000/api/soccer')
       ]);
+      setProducts({
+        badmintons: badmintonResponse.data.data,
+        futsals: futsalResponse.data.data,
+        miniSoccers: miniSoccerResponse.data.data,
+      });
       setLoading(false);
-      setBadmintons(badmintonResponse.data.data);
-      setFutsals(futsalResponse.data.data);
-      setMiniSoccers(miniSoccerResponse.data.data);
     } catch (error) {
       console.error('Error fetching data:', error);
+      setError('Failed to load data');
       setLoading(false);
     }
   };
 
   const handlePressMessage = (productName) => {
-    // Tambahkan logika untuk menangani tombol pesan di sini
     console.log('Pesan:', productName);
   };
 
-  const renderBadmintonItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.title}>{item.nama}</Text>
-      <Text style={styles.price}>Harga: {item.harga}</Text>
-      <Text style={styles.description}>Keterangan: {item.keterangan}</Text>
-      <TouchableOpacity onPress={() => handlePressMessage(item.nama)} style={styles.button}>
-        <Text style={styles.buttonText}>Pesan</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderFutsalItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.title}>{item.nama}</Text>
-      <Text style={styles.price}>Harga: {item.harga}</Text>
-      <Text style={styles.description}>Keterangan: {item.keterangan}</Text>
-      <TouchableOpacity onPress={() => handlePressMessage(item.nama)} style={styles.button}>
-        <Text style={styles.buttonText}>Pesan</Text>
-      </TouchableOpacity>
-    </View>
-  );
-  
-  const renderMiniSoccerItem = ({ item }) => (
+  const renderProductItem = (item) => (
     <View style={styles.card}>
       <Text style={styles.title}>{item.nama}</Text>
       <Text style={styles.price}>Harga: {item.harga}</Text>
@@ -71,36 +50,38 @@ const ProductCardView = () => {
     <View style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
       ) : (
-        <View>
+        <>
           <View style={styles.horizontalListContainer}>
             <Text style={styles.sectionTitle}>Badminton</Text>
             <FlatList
-              data={badmintons}
-              renderItem={renderBadmintonItem}
+              data={products.badmintons}
+              renderItem={({ item }) => renderProductItem(item)}
               keyExtractor={(item) => item.id.toString()}
               horizontal
             />
           </View>
-          <View style={styles.verticalListContainer}>
+          <View style={styles.horizontalListContainer}>
             <Text style={styles.sectionTitle}>Futsal</Text>
             <FlatList
-              data={futsals}
-              renderItem={renderFutsalItem}
+              data={products.futsals}
+              renderItem={({ item }) => renderProductItem(item)}
               keyExtractor={(item) => item.id.toString()}
               horizontal
             />
           </View>
-          <View style={styles.verticalListContainer}>
+          <View style={styles.horizontalListContainer}>
             <Text style={styles.sectionTitle}>Mini Soccer</Text>
             <FlatList
-              data={miniSoccers}
-              renderItem={renderMiniSoccerItem}
+              data={products.miniSoccers}
+              renderItem={({ item }) => renderProductItem(item)}
               keyExtractor={(item) => item.id.toString()}
               horizontal
             />
           </View>
-        </View>
+        </>
       )}
     </View>
   );
@@ -113,11 +94,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   horizontalListContainer: {
-    marginTop: 20,
-    paddingHorizontal: 10,
-    width: Dimensions.get('window').width - 20,
-  },
-  verticalListContainer: {
     marginTop: 20,
     paddingHorizontal: 10,
     width: Dimensions.get('window').width - 20,
@@ -161,7 +137,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  },
 });
-
 
 export default ProductCardView;
