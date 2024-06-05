@@ -1,45 +1,56 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-import { useCallback } from "react";
-import BottomTabNavigation from "./navigation/BottomTabNavigation";
-import UserProfile from "./screens/UserProfile";
-import Register from "./screens/Register";
-import { Cart, ProductDetails } from "./screens";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo
+import Login from './components/Page/Login';
+import Register from './components/Page/Register';
+import Home from './components/Home';
+import Profile from './components/Page/Profile';
+import Order from './components/Page/Order';
 
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-const Stack = createNativeStackNavigator();
+const AuthStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+      <Stack.Screen name="Register" component={Register} options={{ headerShown: false }}/>
+      <Stack.Screen name="Profile"
+          component={Profile}
+          options={{ headerShown: false, tabBarVisible: false }}/>
+    </Stack.Navigator>
+  );
+};
 
-export default function App() {
-  const [fontsLoaded] = useFonts({
-    regular: require("./assets/fonts/Poppins-Regular.ttf"),
-    light: require("./assets/fonts/Poppins-Light.ttf"),
-    bold: require("./assets/fonts/Poppins-Bold.ttf"),
-    medium: require("./assets/fonts/Poppins-Medium.ttf"),
-    extraBold: require("./assets/fonts/Poppins-ExtraBold.ttf"),
-    semiBold: require("./assets/fonts/Poppins-SemiBold.ttf"),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
+const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Bottom Navigation" component={BottomTabNavigation} options={{ headerShown: false }} />
-        <Stack.Screen name="Cart" component={Cart} options={{ headerShown: false }} />
-        <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
-        <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-        <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }}/>
-      </Stack.Navigator>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={AuthStack}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="person" color={color} size={size} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     </NavigationContainer>
   );
-}
+};
+
+export default App;
