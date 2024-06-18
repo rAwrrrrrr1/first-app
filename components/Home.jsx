@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = () => {
   const navigation = useNavigation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [fields, setFields] = useState({
     badminton: [],
     futsal: [],
@@ -14,23 +14,22 @@ const Home = () => {
   });
 
   useEffect(() => {
-    // Fetch login status from AsyncStorage on component mount
     const checkLoginStatus = async () => {
       try {
         const value = await AsyncStorage.getItem('isLoggedIn');
         if (value !== null) {
-          setIsLoggedIn(JSON.parse(value)); // Parse the value to boolean
+          setIsLoggedIn(JSON.parse(value));
         }
       } catch (error) {
         console.error('Error fetching login status:', error);
       }
     };
 
-    checkLoginStatus(); // Call the function to check login status
+    checkLoginStatus();
 
     const fetchBadmintonData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/badminton');
+        const response = await axios.get('http://172.20.10.5:8000/api/badminton');
         return response.data.data;
       } catch (error) {
         console.error('Error fetching badminton data:', error);
@@ -40,7 +39,7 @@ const Home = () => {
 
     const fetchFutsalData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/futsal');
+        const response = await axios.get('http://172.20.10.5:8000/api/futsal');
         return response.data.data;
       } catch (error) {
         console.error('Error fetching futsal data:', error);
@@ -50,7 +49,7 @@ const Home = () => {
 
     const fetchMiniSoccerData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/soccer');
+        const response = await axios.get('http://172.20.10.5:8000/api/soccer');
         return response.data.data;
       } catch (error) {
         console.error('Error fetching mini soccer data:', error);
@@ -70,14 +69,15 @@ const Home = () => {
     fetchData();
   }, []);
 
-  const handleBooking = (fieldType, fieldName) => {
-    if (isLoggedIn) {
-      // Proceed with booking
-      console.log(`Booking ${fieldName} (${fieldType})`);
-    } else {
-      // Redirect to login screen if not logged in
-      navigation.navigate('Login');
-    }
+  const handleViewSchedule = (fieldType, field) => {
+    navigation.navigate('Jadwal', { fieldType, field });
+  };
+
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(number);
   };
 
   return (
@@ -86,43 +86,43 @@ const Home = () => {
       <Text>Ini adalah halaman utama dari aplikasi kami.</Text>
       <Text>Silakan jelajahi fitur-fitur yang tersedia!</Text>
 
-      <View>
+      <View style={styles.section}>
         <Text style={styles.subtitle}>Lapangan Badminton</Text>
         {fields.badminton.map((field, index) => (
-          <TouchableOpacity key={index} style={styles.card} onPress={() => handleBooking('badminton', field.nama)}>
-            <Text><h3>{field.nama}</h3></Text>
-            <Text>Harga: {field.harga}</Text>
+          <TouchableOpacity key={index} style={styles.card}>
+            <Text>{field.nama}</Text>
+            <Text>Harga: {formatRupiah(field.harga)}</Text>
             <Text>Keterangan: {field.keterangan}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleBooking('badminton', field.nama)}>
-              <Text style={styles.buttonText}>Pesan Sekarang</Text>
+            <TouchableOpacity style={styles.button} onPress={() => handleViewSchedule('badminton', field)}>
+              <Text style={styles.buttonText}>Lihat Jadwal</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View>
+      <View style={styles.section}>
         <Text style={styles.subtitle}>Lapangan Futsal</Text>
         {fields.futsal.map((field, index) => (
-          <TouchableOpacity key={index} style={styles.card} onPress={() => handleBooking('futsal', field.nama)}>
-            <Text><h3>{field.nama}</h3></Text>
-            <Text>Harga: {field.harga}</Text>
+          <TouchableOpacity key={index} style={styles.card}>
+            <Text>{field.nama}</Text>
+            <Text>Harga: {formatRupiah(field.harga)}</Text>
             <Text>Keterangan: {field.keterangan}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleBooking('futsal', field.nama)}>
-              <Text style={styles.buttonText}>Pesan Sekarang</Text>
+            <TouchableOpacity style={styles.button} onPress={() => handleViewSchedule('futsal', field)}>
+              <Text style={styles.buttonText}>Lihat Jadwal</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View>
+      <View style={styles.section}>
         <Text style={styles.subtitle}>Lapangan Mini Soccer</Text>
         {fields.miniSoccer.map((field, index) => (
-          <TouchableOpacity key={index} style={styles.card} onPress={() => handleBooking('mini soccer', field.nama)}>
-            <Text><h3>{field.nama}</h3></Text>
-            <Text>Harga: {field.harga}</Text>
+          <TouchableOpacity key={index} style={styles.card}>
+            <Text>{field.nama}</Text>
+            <Text>Harga: {formatRupiah(field.harga)}</Text>
             <Text>Keterangan: {field.keterangan}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleBooking('mini soccer', field.nama)}>
-              <Text style={styles.buttonText}>Pesan Sekarang</Text>
+            <TouchableOpacity style={styles.button} onPress={() => handleViewSchedule('mini soccer', field)}>
+              <Text style={styles.buttonText}>Lihat Jadwal</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
@@ -134,6 +134,8 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingTop: 50,
+    paddingBottom: 50, // Added padding for bottom gap
   },
   title: {
     fontSize: 24,
@@ -145,6 +147,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
+  },
+  section: {
+    marginBottom: 20, // Added margin for gap between sections
   },
   card: {
     borderWidth: 1,

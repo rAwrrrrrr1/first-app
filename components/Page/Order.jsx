@@ -1,103 +1,46 @@
-// import React, { useState } from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// import DatePicker from 'react-native-datepicker';
+import React from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
-// const Order = () => {
-//   const [selectedDate, setSelectedDate] = useState('');
-//   const [endDate, setEndDate] = useState('');
+const Order = () => {
+  const route = useRoute();
+  const { fieldType, fieldName } = route.params;
 
-//   const handleDateChange = (date) => {
-//     setSelectedDate(date);
-//     setEndDate(calculateEndDate(date));
-//   };
+  const handleOrder = () => {
+    // Implement order logic here
+    console.log(`Ordered ${fieldName} (${fieldType})`);
+  };
 
-//   const calculateEndDate = (startDate) => {
-//     // Assuming 7 days from the start date
-//     const endDate = new Date(startDate);
-//     endDate.setDate(endDate.getDate() + 7);
-//     return endDate.toISOString().slice(0, 10);
-//   };
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Order Lapangan</Text>
+      <Text style={styles.fieldName}>Lapangan: {fieldName}</Text>
+      <Text style={styles.fieldType}>Tipe: {fieldType}</Text>
+      <Button title="Konfirmasi Pesanan" onPress={handleOrder} />
+    </View>
+  );
+};
 
-//   const handleOrder = () => {
-//     if (selectedDate && endDate) {
-//       // Implement order logic here
-//       console.log(`Booking from ${selectedDate} to ${endDate}`);
-//     } else {
-//       alert('Please select a date range.');
-//     }
-//   };
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  fieldName: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  fieldType: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+});
 
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Select Booking Dates (7 days)</Text>
-//       <View style={styles.dateContainer}>
-//         <DatePicker
-//           style={styles.datePicker}
-//           date={selectedDate}
-//           mode="date"
-//           placeholder="Select start date"
-//           format="YYYY-MM-DD"
-//           minDate="2024-01-01"
-//           maxDate="2024-12-31"
-//           confirmBtnText="Confirm"
-//           cancelBtnText="Cancel"
-//           onDateChange={handleDateChange}
-//         />
-//         <Text style={styles.dateLabel}>to</Text>
-//         <DatePicker
-//           style={styles.datePicker}
-//           date={endDate}
-//           mode="date"
-//           placeholder="Select end date"
-//           format="YYYY-MM-DD"
-//           minDate={selectedDate}
-//           maxDate={calculateEndDate(selectedDate)}
-//           confirmBtnText="Confirm"
-//           cancelBtnText="Cancel"
-//           onDateChange={setEndDate}
-//         />
-//       </View>
-//       <TouchableOpacity style={styles.button} onPress={handleOrder}>
-//         <Text style={styles.buttonText}>Place Order</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     padding: 20,
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   dateContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     marginBottom: 20,
-//   },
-//   datePicker: {
-//     flex: 1,
-//     marginRight: 10,
-//   },
-//   dateLabel: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-//   button: {
-//     backgroundColor: 'blue',
-//     padding: 10,
-//     borderRadius: 5,
-//   },
-//   buttonText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default Order;
+export default Order;

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Alert, View, TextInput, Button, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 const handleLogin = async (email, password, navigation) => {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+    const response = await axios.post('http://172.20.10.5:8000/api/login', {
       email: email,
       password: password
     });
@@ -18,13 +19,30 @@ const handleLogin = async (email, password, navigation) => {
       await AsyncStorage.setItem('access_token', access_token);
       await AsyncStorage.setItem('user', JSON.stringify(user));
 
-      // Navigate to the Home screen
-      navigation.navigate('Profile');
+      // Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'Login Successful',
+        text2: 'Welcome back!',
+      });
+
+      // Navigate to the Profile screen
+      setTimeout(() => {
+        navigation.navigate('Profile');
+      }, 2000); // Delay to let the user see the toast
     } else {
-      Alert.alert('Login Failed', 'Invalid credentials');
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: 'Invalid credentials',
+      });
     }
   } catch (error) {
-    Alert.alert('Login Error', 'An error occurred during login');
+    Toast.show({
+      type: 'error',
+      text1: 'Login Error',
+      text2: 'An error occurred during login',
+    });
     console.error(error);
   }
 };
@@ -67,6 +85,7 @@ const Login = () => {
       >
         <Text style={styles.registerLinkText}>Don't have an account? Register</Text>
       </TouchableOpacity>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </View>
   );
 };
@@ -106,6 +125,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  registerLink: {
+    marginTop: 20,
+  },
+  registerLinkText: {
+    color: '#007BFF',
+    textDecorationLine: 'underline',
   },
 });
 
