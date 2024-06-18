@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 
 const handleLogin = async (email, password, navigation) => {
   try {
-    const response = await axios.post('http://172.20.10.5:8000/api/login', {
+    const response = await axios.post('http://127.0.0.1:8000/api/login', {
       email: email,
       password: password
     });

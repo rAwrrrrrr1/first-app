@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 
 const handleRegister = async (email, password, nama, telepon, navigation) => {
   try {
-    const response = await axios.post('http://172.20.10.5:8000/api/register', {
+    const response = await axios.post('http://127.0.0.1:8000/api/register', {
       email: email,
       password: password,
       nama: nama,

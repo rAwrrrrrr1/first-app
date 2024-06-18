@@ -29,7 +29,7 @@ const Home = () => {
 
     const fetchBadmintonData = async () => {
       try {
-        const response = await axios.get('http://172.20.10.5:8000/api/badminton');
+        const response = await axios.get('http://127.0.0.1:8000/api/badminton');
         return response.data.data;
       } catch (error) {
         console.error('Error fetching badminton data:', error);
@@ -39,7 +39,7 @@ const Home = () => {
 
     const fetchFutsalData = async () => {
       try {
-        const response = await axios.get('http://172.20.10.5:8000/api/futsal');
+        const response = await axios.get('http://127.0.0.1:8000/api/futsal');
         return response.data.data;
       } catch (error) {
         console.error('Error fetching futsal data:', error);
@@ -49,7 +49,7 @@ const Home = () => {
 
     const fetchMiniSoccerData = async () => {
       try {
-        const response = await axios.get('http://172.20.10.5:8000/api/soccer');
+        const response = await axios.get('http://127.0.0.1:8000/api/soccer');
         return response.data.data;
       } catch (error) {
         console.error('Error fetching mini soccer data:', error);
@@ -90,6 +90,11 @@ const Home = () => {
         <Text style={styles.subtitle}>Lapangan Badminton</Text>
         {fields.badminton.map((field, index) => (
           <TouchableOpacity key={index} style={styles.card}>
+            {/* <Image
+              key={index}
+              source={{ uri: `http://http://127.0.0.1:8000/${field.gambar}` }}
+              style={styles.image}
+              /> */}
             <Text>{field.nama}</Text>
             <Text>Harga: {formatRupiah(field.harga)}</Text>
             <Text>Keterangan: {field.keterangan}</Text>
@@ -104,6 +109,11 @@ const Home = () => {
         <Text style={styles.subtitle}>Lapangan Futsal</Text>
         {fields.futsal.map((field, index) => (
           <TouchableOpacity key={index} style={styles.card}>
+            {/* <Image
+              key={index}
+              source={{ uri: `http://http://127.0.0.1:8000/${field.gambar}` }}
+              style={styles.image}
+              /> */}
             <Text>{field.nama}</Text>
             <Text>Harga: {formatRupiah(field.harga)}</Text>
             <Text>Keterangan: {field.keterangan}</Text>
@@ -118,6 +128,10 @@ const Home = () => {
         <Text style={styles.subtitle}>Lapangan Mini Soccer</Text>
         {fields.miniSoccer.map((field, index) => (
           <TouchableOpacity key={index} style={styles.card}>
+            {/* <Image
+              key={index}
+              source={{ uri: `http://http://127.0.0.1:8000/${field.gambar}` }}
+              /> */}
             <Text>{field.nama}</Text>
             <Text>Harga: {formatRupiah(field.harga)}</Text>
             <Text>Keterangan: {field.keterangan}</Text>

@@ -39,12 +39,12 @@ const Jadwal = () => {
   const getApiEndpoint = (fieldType, formattedDate) => {
     switch (fieldType) {
       case 'futsal':
-        return `http://172.20.10.5:8000/api/jadwalFutsal/${formattedDate}`;
+        return `http://127.0.0.1:8000/api/jadwalFutsal/${formattedDate}`;
       case 'soccer':
-        return `http://172.20.10.5:8000/api/jadwalSoccer/${formattedDate}`;
+        return `http://127.0.0.1:8000/api/jadwalSoccer/${formattedDate}`;
       case 'badminton':
       default:
-        return `http://172.20.10.5:8000/api/jadwalBadminton/${formattedDate}`;
+        return `http://127.0.0.1:8000/api/jadwalBadminton/${formattedDate}`;
     }
   };
 
