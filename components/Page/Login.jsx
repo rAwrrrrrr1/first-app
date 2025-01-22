@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
-import { Alert, View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
-const handleLogin = async (email, password, navigation) => {
+const handleLogin = async (email, password, setIsLoggedIn, navigation) => {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+    const response = await axios.post('http://172.20.10.5:8000/api/login', {
       email: email,
-      password: password
+      password: password,
     });
 
     if (response.data.success) {
       const { access_token, user } = response.data;
-
-      // Store token and user information in AsyncStorage
+      // Store access token and user details
       await AsyncStorage.setItem('access_token', access_token);
       await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      // // Update login state and navigate to Profile
+      // setIsLoggedIn(false);
+      navigation.replace('Profile');
 
       // Show success toast
       Toast.show({
@@ -25,29 +29,26 @@ const handleLogin = async (email, password, navigation) => {
         text1: 'Login Successful',
         text2: 'Welcome back!',
       });
-
-      // Navigate to the Profile screen
-      setTimeout(() => {
-        navigation.navigate('Profile');
-      }, 2000); // Delay to let the user see the toast
     } else {
+      // Show error toast
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
-        text2: 'Invalid credentials',
+        text2: response.data.message || 'Invalid credentials',
       });
     }
   } catch (error) {
+    // Handle errors during login
     Toast.show({
       type: 'error',
       text1: 'Login Error',
-      text2: 'An error occurred during login',
+      text2: error.response ? error.response.data.message : 'An error occurred during login',
     });
     console.error(error);
   }
 };
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
@@ -75,7 +76,7 @@ const Login = () => {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => handleLogin(email, password, navigation)}
+        onPress={() => handleLogin(email, password, setIsLoggedIn, navigation)}
       >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -85,7 +86,7 @@ const Login = () => {
       >
         <Text style={styles.registerLinkText}>Don't have an account? Register</Text>
       </TouchableOpacity>
-      <Toast ref={(ref) => Toast.setRef(ref)} />
+      <Toast />
     </View>
   );
 };

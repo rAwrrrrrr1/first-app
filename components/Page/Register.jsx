@@ -5,41 +5,49 @@ import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
 const handleRegister = async (email, password, nama, telepon, navigation) => {
+  if (!email || !password || !nama || !telepon) {
+    Toast.show({
+      type: 'error',
+      text1: 'Validation Error',
+      text2: 'All fields are required.',
+    });
+    return;
+  }
+
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/register', {
-      email: email,
-      password: password,
-      nama: nama,
-      telepon: telepon
+    const response = await axios.post('http://172.20.10.5:8000/api/register', {
+      email,
+      password,
+      nama,
+      telepon,
     });
 
-    if(response.data.success){
+    if (response.data.success) {
       Toast.show({
-        type:'success',
-        text1:'Register Successful',
-        text2:'You can log in now',
+        type: 'success',
+        text1: 'Register Successful',
+        text2: 'You can log in now.',
       });
 
       setTimeout(() => {
         navigation.navigate('Login');
       }, 2000);
-    }else{
+    } else {
       Toast.show({
-        type:'error',
-        text1:'Register error',
-        text2:'Invalid input',
+        type: 'error',
+        text1: 'Register Error',
+        text2: response.data.message || 'Invalid input.',
       });
     }
-  } catch(error){
+  } catch (error) {
     Toast.show({
       type: 'error',
-      text1: 'Regsiter error',
-      text2: 'An error occurred during register',
+      text1: 'Register Error',
+      text2: error.response?.data?.message || 'An error occurred during registration.',
     });
     console.error(error);
   }
 };
-
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -97,7 +105,7 @@ const Register = () => {
       >
         <Text style={styles.loginLinkText}>Already have an account? Login</Text>
       </TouchableOpacity>
-      <Toast ref={(ref) => Toast.setRef(ref)} />
+      <Toast />
     </View>
   );
 };

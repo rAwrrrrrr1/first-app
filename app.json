@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "first-app",
-    "slug": "first-app",
+    "slug": "wins",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,8 +24,21 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "../component/Image/logo.png"
     },
-    "permissions": ["INTERNET"]
+    "permissions": [
+      "INTERNET",
+      "CAMERA",
+      "MEDIA_LIBRARY"
+    ],
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1fa499ae-83e0-48cd-ac67-3dfff74db787"
+      }
+    },
+    "owner": "rawrrrr11"
   }
 }

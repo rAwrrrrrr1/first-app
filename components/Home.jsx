@@ -1,187 +1,162 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Home = () => {
   const navigation = useNavigation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [fields, setFields] = useState({
-    badminton: [],
-    futsal: [],
-    miniSoccer: [],
-  });
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const value = await AsyncStorage.getItem('isLoggedIn');
-        if (value !== null) {
-          setIsLoggedIn(JSON.parse(value));
-        }
-      } catch (error) {
-        console.error('Error fetching login status:', error);
-      }
-    };
-
-    checkLoginStatus();
-
-    const fetchBadmintonData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/badminton');
-        return response.data.data;
-      } catch (error) {
-        console.error('Error fetching badminton data:', error);
-        return [];
-      }
-    };
-
-    const fetchFutsalData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/futsal');
-        return response.data.data;
-      } catch (error) {
-        console.error('Error fetching futsal data:', error);
-        return [];
-      }
-    };
-
-    const fetchMiniSoccerData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/soccer');
-        return response.data.data;
-      } catch (error) {
-        console.error('Error fetching mini soccer data:', error);
-        return [];
-      }
-    };
-
-    const fetchData = async () => {
-      const [badminton, futsal, miniSoccer] = await Promise.all([
-        fetchBadmintonData(),
-        fetchFutsalData(),
-        fetchMiniSoccerData()
-      ]);
-      setFields({ badminton, futsal, miniSoccer });
-    };
-
-    fetchData();
-  }, []);
-
-  const handleViewSchedule = (fieldType, field) => {
-    navigation.navigate('Jadwal', { fieldType, field });
-  };
-
-  const formatRupiah = (number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    }).format(number);
-  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Selamat Datang di WinsArena</Text>
-      <Text>Ini adalah halaman utama dari aplikasi kami.</Text>
-      <Text>Silakan jelajahi fitur-fitur yang tersedia!</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.subtitle}>Lapangan Badminton</Text>
-        {fields.badminton.map((field, index) => (
-          <TouchableOpacity key={index} style={styles.card}>
-            {/* <Image
-              key={index}
-              source={{ uri: `http://http://127.0.0.1:8000/${field.gambar}` }}
-              style={styles.image}
-              /> */}
-            <Text>{field.nama}</Text>
-            <Text>Harga: {formatRupiah(field.harga)}</Text>
-            <Text>Keterangan: {field.keterangan}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleViewSchedule('badminton', field)}>
-              <Text style={styles.buttonText}>Lihat Jadwal</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        ))}
+    <View style={styles.wrapper}>
+      {/* Logo and Title in one row */}
+      <View style={styles.headerRow}>
+        <Image
+          source={require('../components/Image/logo.png')} // Replace with your logo path
+          style={styles.logo}
+        />
+        <View>
+          <Text style={styles.title}>Welcome to WinsArena</Text>
+          <Text style={styles.subtitle}>
+            Select a field to view details and schedules
+          </Text>
+        </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.subtitle}>Lapangan Futsal</Text>
-        {fields.futsal.map((field, index) => (
-          <TouchableOpacity key={index} style={styles.card}>
-            {/* <Image
-              key={index}
-              source={{ uri: `http://http://127.0.0.1:8000/${field.gambar}` }}
-              style={styles.image}
-              /> */}
-            <Text>{field.nama}</Text>
-            <Text>Harga: {formatRupiah(field.harga)}</Text>
-            <Text>Keterangan: {field.keterangan}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleViewSchedule('futsal', field)}>
-              <Text style={styles.buttonText}>Lihat Jadwal</Text>
-            </TouchableOpacity>
+      {/* Scrollable content */}
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.cardContainer}>
+          {/* Card for Badminton */}
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('MenuBadminton')}
+          >
+            <Image
+              source={require('../components/Image/badmin_utama.jpg')} // Replace with your image path
+              style={styles.cardImage}
+            />
+            <View style={styles.cardContent}>
+              <View style={styles.cardHeader}>
+                <Icon name="sports-tennis" size={24} color="#4CAF50" />
+                <Text style={styles.cardTitle}>Badminton Court</Text>
+              </View>
+              <Text style={styles.cardDescription}>
+                Premium facilities for the best badminton experience.
+              </Text>
+            </View>
           </TouchableOpacity>
-        ))}
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.subtitle}>Lapangan Mini Soccer</Text>
-        {fields.miniSoccer.map((field, index) => (
-          <TouchableOpacity key={index} style={styles.card}>
-            {/* <Image
-              key={index}
-              source={{ uri: `http://http://127.0.0.1:8000/${field.gambar}` }}
-              /> */}
-            <Text>{field.nama}</Text>
-            <Text>Harga: {formatRupiah(field.harga)}</Text>
-            <Text>Keterangan: {field.keterangan}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleViewSchedule('mini soccer', field)}>
-              <Text style={styles.buttonText}>Lihat Jadwal</Text>
-            </TouchableOpacity>
+          {/* Card for Futsal */}
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('MenuFutsal')}
+          >
+            <Image
+              source={require('../components/Image/futsal_utama.jpg')} // Replace with your image path
+              style={styles.cardImage}
+            />
+            <View style={styles.cardContent}>
+              <View style={styles.cardHeader}>
+                <Icon name="sports-soccer" size={24} color="#FF5722" />
+                <Text style={styles.cardTitle}>Futsal Court</Text>
+              </View>
+              <Text style={styles.cardDescription}>
+                International standard futsal courts for your matches.
+              </Text>
+            </View>
           </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+
+          {/* Card for Mini Soccer */}
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('MenuSoccer')}
+          >
+            <Image
+              source={require('../components/Image/mini_soccer utama2.jpg')} // Replace with your image path
+              style={styles.cardImage}
+            />
+            <View style={styles.cardContent}>
+              <View style={styles.cardHeader}>
+                <Icon name="sports-soccer" size={24} color="#FFC107" />
+                <Text style={styles.cardTitle}>Mini Soccer Field</Text>
+              </View>
+              <Text style={styles.cardDescription}>
+                Enjoy the best mini soccer experience.
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#d6d6d6',
     padding: 20,
     paddingTop: 50,
-    paddingBottom: 50, // Added padding for bottom gap
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  logo: {
+    width: 75,
+    height: 75,
+    marginRight: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+    color: '#333',
   },
-  section: {
-    marginBottom: 20, // Added margin for gap between sections
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+  },
+  container: {
+    paddingBottom: 20,
+  },
+  cardContainer: {
+    flexDirection: 'column',
   },
   card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginVertical: 12,
+    overflow: 'hidden',
+    borderColor: '#ddd',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  button: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
+  cardImage: {
+    width: '100%',
+    height: 160,
   },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold',
+  cardContent: {
+    padding: 16,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 8,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#777',
+    lineHeight: 20,
   },
 });
 
